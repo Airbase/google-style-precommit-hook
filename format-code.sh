@@ -1,13 +1,16 @@
 #!/usr/bin/env sh
+GJF_VERSION=1.37.0
+GJF_JAR=google-java-format-${GJF_VERSION}-all-deps.jar
 mkdir -p .cache
 cd .cache
-if [ ! -f google-java-format-1.7-all-deps.jar ]
+if [ ! -f "$GJF_JAR" ]
 then
-    curl -LJO "https://github.com/google/google-java-format/releases/download/google-java-format-1.7/google-java-format-1.7-all-deps.jar"
-    chmod 755 google-java-format-1.7-all-deps.jar
+    curl -LJO "https://github.com/google/google-java-format/releases/download/v${GJF_VERSION}/${GJF_JAR}"
+    chmod 755 "$GJF_JAR"
 fi
 cd ..
 
 changed_java_files=$(git diff --cached --name-only --diff-filter=ACMR | grep ".*java$" )
 echo $changed_java_files
-java -jar .cache/google-java-format-1.7-all-deps.jar --replace $changed_java_files
+[ -z "$changed_java_files" ] && exit 0
+java -jar ".cache/$GJF_JAR" --replace $changed_java_files
